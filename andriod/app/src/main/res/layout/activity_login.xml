@@ -60,16 +60,16 @@
                 android:id="@+id/forget_password_link"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
                 android:layout_below="@+id/login_password"
-                android:text="Forget Password"
-                android:layout_marginTop="2dp"
-                android:layout_marginRight="23dp"
+                android:layout_centerHorizontal="true"
                 android:layout_marginLeft="15dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginRight="23dp"
                 android:textAlignment="textEnd"
+                android:textColor="@color/colorPrimaryDark"
                 android:textSize="17sp"
-                android:textStyle="bold"
-                android:textColor="@color/colorPrimaryDark"/>
+                android:textStyle="bold" />
+
             <Button
                 android:id="@+id/login_button"
                 android:layout_width="match_parent"

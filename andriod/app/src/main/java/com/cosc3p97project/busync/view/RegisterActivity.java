@@ -65,49 +65,53 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void CreateNewAccount() {
-        String email = UserEmail.getText().toString();
-        String password = UserPassword.getText().toString();
+        String email = UserEmail.getText().toString().trim();
+        String password = UserPassword.getText().toString().trim();
 
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(this, "Please enter Email", Toast.LENGTH_SHORT).show();
-        } else if (TextUtils.isEmpty(password)) {
-            Toast.makeText(this, "Please Enter Password", Toast.LENGTH_SHORT).show();
-        } else {
-            mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if (task.isSuccessful()) {
-                        String currentUserId = mAuth.getCurrentUser().getUid();
-                        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
-                            @Override
-                            public void onComplete(@NonNull Task<String> task) {
-                                if (task.isSuccessful() && task.getResult() != null) {
-                                    String deviceToken = task.getResult();
-                                    RootRef.child("Users").child(currentUserId).child("device_token").setValue(deviceToken)
-                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
-                                                    if (task.isSuccessful()) {
-                                                        SendUserToMainActivity();
-                                                        Toast.makeText(RegisterActivity.this, "Account Created Successfully...", Toast.LENGTH_SHORT).show();
-                                                    }
-                                                }
-                                            });
-                                } else {
-                                    String message = task.getException().toString();
-                                    Toast.makeText(RegisterActivity.this, "Error : " + message, Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-                        // Redirect the user to MainActivity after successful registration
-                        SendUserToMainActivity();
-                    } else {
-                        String message = task.getException().toString();
-                        Toast.makeText(RegisterActivity.this, "Error : " + message, Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
+            return;
+        } else if (!email.endsWith("@brocku.ca")) {
+            Toast.makeText(this, "Only Brock University emails (@brocku.ca) are allowed for registration.", Toast.LENGTH_LONG).show();
+            return;
         }
+        if (TextUtils.isEmpty(password)) {
+            Toast.makeText(this, "Please Enter Password", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    String currentUserId = mAuth.getCurrentUser().getUid();
+                    FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+                        @Override
+                        public void onComplete(@NonNull Task<String> task) {
+                            if (task.isSuccessful() && task.getResult() != null) {
+                                String deviceToken = task.getResult();
+                                RootRef.child("Users").child(currentUserId).child("device_token").setValue(deviceToken)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    SendUserToMainActivity();
+                                                    Toast.makeText(RegisterActivity.this, "Account Created Successfully...", Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        });
+                            } else {
+                                String message = task.getException().toString();
+                                Toast.makeText(RegisterActivity.this, "Error : " + message, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                } else {
+                    String message = task.getException().toString();
+                    Toast.makeText(RegisterActivity.this, "Error : " + message, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     private void SendUserToMainActivity() {
