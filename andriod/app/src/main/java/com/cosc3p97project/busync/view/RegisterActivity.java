@@ -35,11 +35,11 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-
+        // firebase authentication instance.
         mAuth = FirebaseAuth.getInstance();
         RootRef = FirebaseDatabase.getInstance().getReference();
 
-        InitializeFields();
+        InitializeFields(); // initializing component fields.
 
         AlreadyHaveAccountLink.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,12 +51,13 @@ public class RegisterActivity extends AppCompatActivity {
         CreateAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CreateNewAccount();
+                CreateNewAccount(); // creates a new account on clicking create account button.
             }
         });
 
     }
 
+    // UI component initialization.
     private void InitializeFields() {
         CreateAccountButton = (Button) findViewById(R.id.register_button);
         UserEmail = (EditText) findViewById(R.id.register_email);
@@ -64,6 +65,7 @@ public class RegisterActivity extends AppCompatActivity {
         AlreadyHaveAccountLink = (TextView) findViewById(R.id.already_have_account_link);
     }
 
+    // Creates a new account uses, brock email only for registration.
     private void CreateNewAccount() {
         String email = UserEmail.getText().toString().trim();
         String password = UserPassword.getText().toString().trim();
@@ -80,6 +82,7 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
+        // Creates user with email and passwords and updates to corresponding intent.
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -114,6 +117,7 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
+    // Sends use to main activity intent.
     private void SendUserToMainActivity() {
         Intent mainIntent = new Intent(RegisterActivity.this, MainActivity.class);
         mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -121,6 +125,7 @@ public class RegisterActivity extends AppCompatActivity {
         finish();
     }
 
+    // sends user to login activity intent.
     private void SendUserToLoginActivity() {
         Intent loginIntent = new Intent(RegisterActivity.this, LoginActivity.class);
         loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

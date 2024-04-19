@@ -124,29 +124,31 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    // On menu item selection, the following functions activates conditionally.
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.main_logout_option) {
             if (currentUserID != null) {
-                updateUserStatus("offline");
+                updateUserStatus("offline"); // updates user status to offline.
             }
-            mAuth.signOut();
-            SendUserToLoginActivity();
+            mAuth.signOut(); // signs out the user.
+            SendUserToLoginActivity(); // sends the user back to login activity.
             return true;
         } else if (id == R.id.main_settings_option) {
-            SendUserToSettingsActivity();
+            SendUserToSettingsActivity(); // sends the user to settings activity
             return true;
         } else if (id == R.id.main_find_friends_option) {
-            SendUserToFindFriendsActivity();
+            SendUserToFindFriendsActivity(); // sends the user to find friends activity intent.
             return true;
         } else if (id == R.id.main_create_group_option) {
-            RequestNewGroup();
+            RequestNewGroup();// creates a new group. pops up a window to put a name on it.
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    // creates a new group with just a name.
     private void RequestNewGroup() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.AlertDialog);
         builder.setTitle("Enter Group Name:");
@@ -172,15 +174,16 @@ public class MainActivity extends AppCompatActivity {
         builder.show();
     }
 
+    // Creates a new group.
     private void CreateNewGroup(final String groupName) {
-        // Get the current date and time
+        // Gets the current date and time
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat currentDate = new SimpleDateFormat("MMM dd, yyyy");
         String saveCurrentDate = currentDate.format(calendar.getTime());
         SimpleDateFormat currentTime = new SimpleDateFormat("hh:mm a");
         String saveCurrentTime = currentTime.format(calendar.getTime());
 
-        // Create a map to hold the initial message
+        // Creating a map to hold the initial message
         Map<String, Object> initialMessage = new HashMap<>();
         initialMessage.put("message", "Welcome to the " + groupName + " group!");
         initialMessage.put("type", "text");
@@ -200,6 +203,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // Sends user to login activity intent
     private void SendUserToLoginActivity() {
         Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
         loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -207,16 +211,19 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
+    // sends user to Settings Activity intent
     private void SendUserToSettingsActivity() {
         Intent settingsIntent = new Intent(MainActivity.this, SettingsActivity.class);
         startActivity(settingsIntent);
     }
 
+    // sends user to find friends activity intent
     private void SendUserToFindFriendsActivity() {
         Intent findFriendsIntent = new Intent(MainActivity.this, FindFriendsActivity.class);
         startActivity(findFriendsIntent);
     }
 
+    // updates user status.
     private void updateUserStatus(String state) {
         HashMap<String, Object> onlineStateMap = new HashMap<>();
         onlineStateMap.put("time", new SimpleDateFormat("hh:mm a").format(Calendar.getInstance().getTime()));

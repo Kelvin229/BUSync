@@ -49,14 +49,16 @@ public class GroupChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_chat);
 
+        // gets the group name from the intent.
         currentGroupName = getIntent().getExtras().get("groupName").toString();
 
+        // Firebase authentication instance.
         mAuth = FirebaseAuth.getInstance();
-        currentUserID = mAuth.getCurrentUser().getUid();
-        UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        currentUserID = mAuth.getCurrentUser().getUid(); // gets current user based on user id.
+        UsersRef = FirebaseDatabase.getInstance().getReference().child("Users"); // reference to Users node in the db.
 
-        InitializeFields();
-        GetUserInfo();
+        InitializeFields(); // initializes component fields.
+        GetUserInfo(); // gets user info.
     }
 
     @Override
@@ -66,23 +68,26 @@ public class GroupChatActivity extends AppCompatActivity {
     }
     private void setupMessageSendingAndListening() {
         if (GroupNameRef != null) {
-            attachChildEventListener();
+            attachChildEventListener(); // listener for group chat.
         }
     }
 
     private void GetUserInfo() {
+
+        // retrieves current users information
         UsersRef.child(currentUserID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists() && dataSnapshot.hasChild("name")) {
                     currentUserName = dataSnapshot.child("name").getValue(String.class);
-                    GroupNameRef = FirebaseDatabase.getInstance().getReference().child("Groups").child(currentGroupName);
+                    GroupNameRef = FirebaseDatabase.getInstance().getReference().child("Groups").child(currentGroupName); // fetches groups node from db, enables access to child nodes as well.
                     setupMessageSendingAndListening();
                 } else {
                     Toast.makeText(GroupChatActivity.this, "User name not found.", Toast.LENGTH_SHORT).show();
                 }
             }
 
+            // throws error.
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Toast.makeText(GroupChatActivity.this, "Database error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
@@ -90,6 +95,7 @@ public class GroupChatActivity extends AppCompatActivity {
         });
     }
 
+    // Event listener
     private void attachChildEventListener() {
         if (messageListener == null) {
             messageListener = new ChildEventListener() {
@@ -112,6 +118,7 @@ public class GroupChatActivity extends AppCompatActivity {
         }
     }
 
+    // Displays messages of group chat.
     private void DisplayMessages(DataSnapshot dataSnapshot) {
         LayoutInflater inflater = LayoutInflater.from(this);
 
@@ -129,6 +136,7 @@ public class GroupChatActivity extends AppCompatActivity {
             messageContent = messageView.findViewById(R.id.message_content);
             messageTime = messageView.findViewById(R.id.message_time);
 
+            // sets the username, message content, and time to the components field.
             messageSenderName.setText(chatName);
             messageContent.setText(chatMessage);
             messageTime.setText(chatTime + " " + chatDate);
@@ -148,6 +156,7 @@ public class GroupChatActivity extends AppCompatActivity {
         }
     }
 
+    // UI Component initializations.
     private void InitializeFields() {
         mToolbar = findViewById(R.id.group_chat_bar_layout);
 
@@ -175,17 +184,20 @@ public class GroupChatActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            onBackPressed(); // This will handle the back operation
+            onBackPressed(); // This handles the back operation
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
+    // Saves messages information to the database.
     private void SaveMessageInfoToDatabase() {
         String message = userMessageInput.getText().toString();
         if (TextUtils.isEmpty(message)) {
             Toast.makeText(this, "Please write message first...", Toast.LENGTH_SHORT).show();
             return;
         }
+
         String messageKey = GroupNameRef.push().getKey();
         HashMap<String, Object> messageInfoMap = new HashMap<>();
         messageInfoMap.put("name", currentUserName);

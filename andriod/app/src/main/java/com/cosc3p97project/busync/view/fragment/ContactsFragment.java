@@ -38,11 +38,14 @@ public class ContactsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Inflating the layout for Contacts Fragment.
         ContactsView = inflater.inflate(R.layout.fragment_contacts, container, false);
 
+        // initializing recycler view for displaying contacts.
         myContactsList = (RecyclerView) ContactsView.findViewById(R.id.contact_list);
         myContactsList.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        // initializing firebase instances and current user with id.
         mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser() != null) {
             currentUserID = mAuth.getCurrentUser().getUid();
@@ -53,6 +56,7 @@ public class ContactsFragment extends Fragment {
         return ContactsView;
     }
 
+    // Checking if the user is logged in or not.
     @Override
     public void onStart() {
         super.onStart();
@@ -63,16 +67,22 @@ public class ContactsFragment extends Fragment {
         }
     }
 
+    // Setting up the adapter, using firebase recycler option
     private void setupAdapter() {
+        // Initializing firebase recycler options to configure the query
         FirebaseRecyclerOptions<Contacts> options =
                 new FirebaseRecyclerOptions.Builder<Contacts>()
                         .setQuery(ContactsRef, Contacts.class)
                         .build();
 
+        // Populating recyclerview with contacts information.
         FirebaseRecyclerAdapter<Contacts, ContactsViewHolder> adapter = new FirebaseRecyclerAdapter<Contacts, ContactsViewHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull final ContactsViewHolder holder, int position, @NonNull Contacts model) {
                 final String userIDs = getRef(position).getKey();
+
+                // handles data changes for each user
+                // displays user name, status, profile image, and online status.
                 UsersRef.child(userIDs).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -96,6 +106,7 @@ public class ContactsFragment extends Fragment {
                         }
                     }
 
+                    // handles errors.
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
                         Toast.makeText(getActivity(), "Database error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
@@ -103,9 +114,11 @@ public class ContactsFragment extends Fragment {
                 });
             }
 
+            // Creates and returns a new view holder for each of the contact item.
             @NonNull
             @Override
             public ContactsViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+                // Inflates the layout with new layout "users_display_layout" item.
                 View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.users_display_layout, viewGroup, false);
                 return new ContactsViewHolder(view);
             }
@@ -115,6 +128,7 @@ public class ContactsFragment extends Fragment {
         adapter.startListening();
     }
 
+    // Creating and returning a new view holder for each of the contact item.
     public static class ContactsViewHolder extends RecyclerView.ViewHolder {
         TextView userName, userStatus;
         CircleImageView profileImage;

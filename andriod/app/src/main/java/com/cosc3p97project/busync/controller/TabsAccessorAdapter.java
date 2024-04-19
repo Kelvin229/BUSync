@@ -13,10 +13,20 @@ import com.cosc3p97project.busync.view.fragment.RequestsFragment;
 
 public class TabsAccessorAdapter extends FragmentPagerAdapter {
 
+    /**
+     * This class helps with getting fragment items. Clicking on different tabs returns its corresponding tabs.
+     */
+
+    // Constructor
     public TabsAccessorAdapter(FragmentManager fm) {
         super(fm);
     }
 
+    /**
+     * Gets fragment item based on index.
+     * @param i -> index i
+     * @return -> returns a fragment.
+     */
     @NonNull
     @Override
     public Fragment getItem(int i) {
@@ -44,11 +54,13 @@ public class TabsAccessorAdapter extends FragmentPagerAdapter {
         }
     }
 
+    // gets the count
     @Override
     public int getCount() {
         return 4;
     }
 
+    // returns page title based on position.
     @Nullable
     @Override
     public CharSequence getPageTitle(int position){

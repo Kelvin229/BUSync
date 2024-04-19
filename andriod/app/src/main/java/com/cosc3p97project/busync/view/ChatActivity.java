@@ -58,36 +58,28 @@ import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ChatActivity extends AppCompatActivity
-{  private String messageReceiverID, messageReceiverName, messageReceiverImage, messageSenderID;
-
+public class ChatActivity extends AppCompatActivity{
+    private String messageReceiverID, messageReceiverName, messageReceiverImage, messageSenderID;
     private TextView userName, userLastSeen;
     private CircleImageView userImage;
-
     private Toolbar ChatToolBar;
     private FirebaseAuth mAuth;
     private DatabaseReference RootRef;
-
     private ImageButton SendMessageButton, SendFilesButton;
     private EditText MessageInputText;
-
     private final List<Messages> messagesList = new ArrayList<>();
     private LinearLayoutManager linearLayoutManager;
     private MessageAdapter messageAdapter;
     private RecyclerView userMessagesList;
-
     private ProgressDialog loadingBar;
-
-
     private String saveCurrentTime, saveCurrentDate;
     private String checker = "",myUrl="";
     private Uri fileUri;
     private StorageTask uploadTask;
 
-    // Add the onCreate method to initialize the activity.
+    // Adding the onCreate method to initialize the activity.
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
@@ -103,7 +95,7 @@ public class ChatActivity extends AppCompatActivity
         messageSenderID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
         RootRef = FirebaseDatabase.getInstance().getReference();
 
-        // Get the user ID, name, and image from the intent extras.
+        // Gets the user ID, name, and image from the intent extras.
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             if (extras.containsKey("visit_user_id")) {
@@ -120,7 +112,7 @@ public class ChatActivity extends AppCompatActivity
 
         IntializeControllers();
 
-        // Add the SendFilesButton onClickListener to handle file uploads.
+        // Adding the SendFilesButton onClickListener to handle file uploads.
         userName.setText(messageReceiverName);
         Picasso.get().load(messageReceiverImage).placeholder(R.drawable.profile_image).into(userImage);
 
@@ -131,7 +123,9 @@ public class ChatActivity extends AppCompatActivity
             }
         });
 
-        DisplayLastSeen();
+        DisplayLastSeen(); // displays last seen activity on chat room
+
+        // Handles the send files button options, checks for if the data file is images, pdfs, or msword file, performs action accordingly.
         SendFilesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -177,7 +171,7 @@ public class ChatActivity extends AppCompatActivity
         });
     }
 
-    // Add the onOptionsItemSelected method to handle the back button in the toolbar.
+    // Adding the onOptionsItemSelected method to handle the back button in the toolbar.
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -187,7 +181,7 @@ public class ChatActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    // Add the IntializeControllers method to initialize the activity components.
+    // Adding the InitializeControllers method to initialize the activity components.
     @SuppressLint("RestrictedApi")
     private void IntializeControllers() {
         ChatToolBar = findViewById(R.id.chat_toolbar);
@@ -234,7 +228,7 @@ public class ChatActivity extends AppCompatActivity
         saveCurrentTime = currentTime.format(calendar.getTime());
     }
 
-    // Add the onActivityResult method to handle file uploads.
+    // Adding  the onActivityResult method to handle file uploads.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -258,13 +252,13 @@ public class ChatActivity extends AppCompatActivity
                final String messagePushID = userMessageKeyRef.getKey();
 
                final StorageReference filePath = storageReference.child(messagePushID + "." + checker);
-
                filePath.putFile(fileUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                   // Add the onComplete method to handle the file upload.
+                   // Adding the onComplete method to handle the file upload.
                    @Override
                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                            if(task.isSuccessful())
                            {
+                               // if upload is successful, saves the message details in the database.
                                Map messageTextBody = new HashMap();
                                messageTextBody.put("message", myUrl);
                                messageTextBody.put("name",fileUri.getLastPathSegment());
@@ -292,6 +286,7 @@ public class ChatActivity extends AppCompatActivity
                            }
                    }
                }).addOnFailureListener(new OnFailureListener() {
+                   // On Failure displays error message.
                    @Override
                    public void onFailure(@NonNull Exception e) {
                      loadingBar.dismiss();
@@ -308,6 +303,7 @@ public class ChatActivity extends AppCompatActivity
            }
            else if(checker.equals("image"))
            {
+               // Handles the case with images attached to message.
                StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("Image Files");
                final String messageSenderRef = "Messages/" + messageSenderID + "/" + messageReceiverID;
                final String messageReceiverRef = "Messages/" + messageReceiverID + "/" + messageSenderID;
@@ -377,7 +373,7 @@ public class ChatActivity extends AppCompatActivity
         }
     }
 
-    // Add the DisplayLastSeen method to show the user's last seen status.
+    // Adding the DisplayLastSeen method to show the user's last seen status.
     private void DisplayLastSeen()
     {
         RootRef.child("Users").child(messageReceiverID)
@@ -413,49 +409,43 @@ public class ChatActivity extends AppCompatActivity
                 });
     }
 
-    // Add the onStart method to populate the RecyclerView with messages.
+    // Adding the onStart method to populate the RecyclerView with messages.
     @Override
-    protected void onStart()
-    {
+    protected void onStart() {
         super.onStart();
         RootRef.child("Messages").child(messageSenderID).child(messageReceiverID)
                 .addChildEventListener(new ChildEventListener() {
                     @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s)
-                    {
-                     Messages messages = dataSnapshot.getValue(Messages.class);
-                     messagesList.add(messages);
-                     messageAdapter.notifyDataSetChanged();
-                     userMessagesList.smoothScrollToPosition(userMessagesList.getAdapter().getItemCount());
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                         Messages messages = dataSnapshot.getValue(Messages.class);
+                         messagesList.add(messages);
+                         messageAdapter.notifyDataSetChanged();
+                         userMessagesList.smoothScrollToPosition(userMessagesList.getAdapter().getItemCount());
                     }
 
                     @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s)
-                    {
-
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        //unchanged
                     }
 
                     @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot)
-                    {
-
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                        //unchanged
                     }
 
                     @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s)
-                    {
-
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        //unchanged
                     }
 
                     @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError)
-                    {
-
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        //unchanged
                     }
                 });
     }
 
-    // Add the SendMessage method to send a text message.
+    // Adding the SendMessage method to send a text message.
     private void SendMessage()
     {
         String messageText = MessageInputText.getText().toString();
@@ -474,6 +464,7 @@ public class ChatActivity extends AppCompatActivity
 
             String messagePushID = userMessageKeyRef.getKey();
 
+            // saving message details in db.
             Map messageTextBody = new HashMap();
             messageTextBody.put("message", messageText);
             messageTextBody.put("type", "text");

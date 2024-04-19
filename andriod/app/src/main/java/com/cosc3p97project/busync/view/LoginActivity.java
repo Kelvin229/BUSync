@@ -39,11 +39,11 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        // Firebase authentication instance
         mAuth = FirebaseAuth.getInstance();
-        UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        UsersRef = FirebaseDatabase.getInstance().getReference().child("Users"); // gets a Users node reference from DB.
 
-        InitializeFields();
-
+        InitializeFields(); // UI Component initialization
         NeedNewAccountLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -55,13 +55,13 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                AllowUserToLogin();
+                AllowUserToLogin(); // Allowed users only
 
             }
         });
     }
 
-    // Add the onStart method to check if the user is already logged in.
+    // Adding  the onStart method to check if the user is already logged in.
     protected void onStart() {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -70,26 +70,22 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    // Add the AllowUserToLogin method to authenticate the user with Firebase.
+    // Adding  the AllowUserToLogin method to authenticate the user with Firebase.
     private void AllowUserToLogin() {
         String email = UserEmail.getText().toString();
         String password = UserPassword.getText().toString();
-        if(TextUtils.isEmpty(email))
-        {
+        if(TextUtils.isEmpty(email)) {
             Toast.makeText(this,"Please enter email",Toast.LENGTH_SHORT).show();
         }
-        if(TextUtils.isEmpty(password))
-        {
+        if(TextUtils.isEmpty(password)) {
             Toast.makeText(this,"Please enter password",Toast.LENGTH_SHORT).show();
         }
-        else
-        {
-
+        else {
+            // handled sign in authentications here.
             mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
-                    if(task.isSuccessful())
-                    {
+                    if(task.isSuccessful()) {
                         String currentUserId = mAuth.getCurrentUser().getUid();
                         FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
                             @Override
@@ -126,7 +122,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    // Add the InitializeFields method to set up the layout elements.
+    // Adding the InitializeFields method to set up the layout elements.
     private void InitializeFields() {
         LoginButton = (Button) findViewById(R.id.login_button);
         UserEmail = (EditText) findViewById(R.id.login_email);
@@ -135,7 +131,7 @@ public class LoginActivity extends AppCompatActivity {
         ForgetPasswordLink = (TextView) findViewById(R.id.forget_password_link);
     }
 
-    // Add the SendUserToMainActivity method to redirect the user to the main activity.
+    // Adding the SendUserToMainActivity method to redirect the user to the main activity.
     private void SendUserToMainActivity() {
         Intent mainIntent = new Intent(LoginActivity.this, MainActivity.class);
        mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -143,7 +139,7 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    // Add the SendUserToRegisterActivity method to redirect the user to the register activity.
+    // Adding the SendUserToRegisterActivity method to redirect the user to the register activity.
     private void SendUserToRegisterActivity() {
         Intent registerIntent = new Intent(LoginActivity.this, RegisterActivity.class);
         startActivity(registerIntent);

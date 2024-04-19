@@ -8,6 +8,7 @@ public class Messages {
 
     }
 
+    // Custom Message class to store messages.
     public Messages(String from, String message, String type, String to, String messageID, String time, String date, String name) {
         this.from = from;
         this.message = message;
@@ -19,6 +20,7 @@ public class Messages {
         this.name = name;
     }
 
+    // getters and setters.
     public String getFrom() {
         return from;
     }
