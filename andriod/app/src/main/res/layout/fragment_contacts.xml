@@ -10,7 +10,7 @@
      android:id = "@+id/contact_list"
        android:layout_width = "match_parent"
        android:layout_height = "match_parent"
-       android:layout_centerInParent = "true"
-    ></androidx.recyclerview.widget.RecyclerView>
+       android:layout_centerInParent = "true">
+   </androidx.recyclerview.widget.RecyclerView>
 
 </RelativeLayout>

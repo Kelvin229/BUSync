@@ -16,11 +16,11 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/private_messages_list_of_users"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/chat_toolbar"
         android:layout_above="@+id/chat_linear_layout"
-        android:layout_marginBottom="6dp"
-        ></androidx.recyclerview.widget.RecyclerView>
+        android:layout_marginBottom="6dp">
+    </androidx.recyclerview.widget.RecyclerView>
 
     <RelativeLayout
         android:id="@+id/chat_linear_layout"
@@ -46,13 +46,12 @@
         android:id="@+id/input_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="type message here..."
+        android:hint="type messages here..."
         android:padding="15dp"
         android:maxLines="5"
         android:layout_toEndOf="@+id/send_files_btn"
         android:layout_toStartOf="@+id/send_message_btn"
         />
-
 
     <ImageButton
         android:id="@+id/send_message_btn"

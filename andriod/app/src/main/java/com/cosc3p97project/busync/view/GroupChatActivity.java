@@ -29,12 +29,16 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import android.view.LayoutInflater;
+import android.widget.LinearLayout;
+
+
 public class GroupChatActivity extends AppCompatActivity {
     private Toolbar mToolbar;
     private ImageButton SendMessageButton;
     private EditText userMessageInput;
     private ScrollView mScrollView;
-    private TextView displayTextMessages;
+    private TextView displayTextMessages, messageSenderName, messageContent, messageTime;
     private FirebaseAuth mAuth;
     private DatabaseReference UsersRef, GroupNameRef;
     private String currentGroupName, currentUserID, currentUserName;
@@ -109,13 +113,28 @@ public class GroupChatActivity extends AppCompatActivity {
     }
 
     private void DisplayMessages(DataSnapshot dataSnapshot) {
+        LayoutInflater inflater = LayoutInflater.from(this);
+
         Iterator iterator = dataSnapshot.getChildren().iterator();
         while (iterator.hasNext()) {
             String chatDate = (String) ((DataSnapshot)iterator.next()).getValue();
             String chatMessage = (String) ((DataSnapshot)iterator.next()).getValue();
             String chatName = (String) ((DataSnapshot)iterator.next()).getValue();
             String chatTime = (String) ((DataSnapshot)iterator.next()).getValue();
-            displayTextMessages.append(chatName + " :\n" + chatMessage + "\n" + chatTime + "     " + chatDate + "\n\n\n");
+//            displayTextMessages.append(chatName + " :\n" + chatMessage + "\n" + chatTime + "     " + chatDate + "\n\n\n");
+
+            View messageView = inflater.inflate(R.layout.custom_group_chat_layout, null);
+
+            messageSenderName = messageView.findViewById(R.id.message_sender_name);
+            messageContent = messageView.findViewById(R.id.message_content);
+            messageTime = messageView.findViewById(R.id.message_time);
+
+            messageSenderName.setText(chatName);
+            messageContent.setText(chatMessage);
+            messageTime.setText(chatTime + " " + chatDate);
+
+            LinearLayout messageContainer = findViewById(R.id.message_container);
+            messageContainer.addView(messageView);
             mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
         }
     }
@@ -131,6 +150,7 @@ public class GroupChatActivity extends AppCompatActivity {
 
     private void InitializeFields() {
         mToolbar = findViewById(R.id.group_chat_bar_layout);
+
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(currentGroupName);
@@ -141,8 +161,7 @@ public class GroupChatActivity extends AppCompatActivity {
         SendMessageButton = findViewById(R.id.send_message_button);
         userMessageInput = findViewById(R.id.input_group_message);
         mScrollView = findViewById(R.id.my_scroll_view);
-        displayTextMessages = findViewById(R.id.group_chat_text_display);
-
+//        displayTextMessages = findViewById(R.id.group_chat_text_display);
         SendMessageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".view.GroupChatActivity"
+    android:background="@drawable/card_board_group_chat">
+
+    <!-- User Name -->
+    <TextView
+        android:id="@+id/message_sender_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="User Name"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:padding="8dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Message Content -->
+    <TextView
+        android:id="@+id/message_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Message Content"
+        android:textSize="16sp"
+        android:padding="8dp"
+        android:layout_below="@id/message_sender_name"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="16dp"/>
+
+    <!-- Message Time -->
+    <TextView
+        android:id="@+id/message_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Message Time"
+        android:textSize="14sp"
+        android:textColor="#888888"
+        android:padding="8dp"
+        android:layout_below="@id/message_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="16dp"/>
+
+</RelativeLayout>
