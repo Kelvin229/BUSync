@@ -37,6 +37,7 @@ public class GroupsFragment extends Fragment
     public GroupsFragment() {
     }
 
+    // On Create View, inflates the view with fragment groups and gets reference to groups from firebase database
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -45,10 +46,13 @@ public class GroupsFragment extends Fragment
 
         GroupRef = FirebaseDatabase.getInstance().getReference().child("Groups");
 
+        // initializes the fields
         InitializeFields();
 
+        // retrieves and displays group information
         RetrieveAndDisplayGroups();
 
+        // handles list item clicks for each group.
         list_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -59,9 +63,10 @@ public class GroupsFragment extends Fragment
             }
         });
 
-        return groupFragmentView;
+        return groupFragmentView; // returns group fragment view.
     }
 
+    // retrieves group information from the database.
     private void RetrieveAndDisplayGroups()
     {
         GroupRef.addValueEventListener(new ValueEventListener() {
@@ -85,6 +90,7 @@ public class GroupsFragment extends Fragment
             }
         });
     }
+    // initializing the view fields
     private void InitializeFields()
     {
         list_view = (ListView) groupFragmentView.findViewById(R.id.list_view);

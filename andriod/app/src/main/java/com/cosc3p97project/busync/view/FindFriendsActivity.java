@@ -36,8 +36,10 @@ public class FindFriendsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find_friends);
 
+        // gets a child reference from the database.
         UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
 
+        // enables UI tool bar.
         mToolbar = findViewById(R.id.main_app_bar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -50,6 +52,7 @@ public class FindFriendsActivity extends AppCompatActivity {
         setupFirebaseRecyclerAdapter();
     }
 
+    // tool bar navigation
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -59,6 +62,7 @@ public class FindFriendsActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    // configuring firebase recycler adapter options.
     private void setupFirebaseRecyclerAdapter() {
         FirebaseRecyclerOptions<Contacts> options = new FirebaseRecyclerOptions.Builder<Contacts>()
                 .setQuery(UsersRef, Contacts.class)
@@ -78,10 +82,12 @@ public class FindFriendsActivity extends AppCompatActivity {
                     holder.itemView.setVisibility(View.VISIBLE);
                     holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
+                    // updates profile name, status, and images.
                     holder.userName.setText(model.getName());
                     holder.userStatus.setText(model.getStatus());
                     Picasso.get().load(model.getImage()).placeholder(R.drawable.profile_image).into(holder.profileImage);
 
+                    // handles item click for user profile.
                     holder.itemView.setOnClickListener(view -> {
                         Intent profileIntent = new Intent(FindFriendsActivity.this, ProfileActivity.class);
                         profileIntent.putExtra("visit_user_id", visit_user_id);
@@ -102,6 +108,7 @@ public class FindFriendsActivity extends AppCompatActivity {
         adapter.startListening();
     }
 
+    // Initilization of components.
     public static class FindFriendViewHolder extends RecyclerView.ViewHolder {
         TextView userName, userStatus;
         CircleImageView profileImage;

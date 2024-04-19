@@ -138,14 +138,17 @@ public class RequestsFragment extends Fragment {
         });
     }
 
+    // Handles the send request from a user
     private void handleSentRequest(RequestsViewHolder holder, String userId) {
         UsersRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // fetches username, userStatus, and image data from the current data snap shot in the database.
                 String userName = dataSnapshot.child("name").getValue(String.class);
                 String userStatus = dataSnapshot.child("status").getValue(String.class);
                 String imageUrl = dataSnapshot.hasChild("image") ? dataSnapshot.child("image").getValue(String.class) : null;
 
+                // displays user information
                 if (imageUrl != null) {
                     Picasso.get().load(imageUrl).into(holder.profileImage);
                 }
@@ -155,6 +158,7 @@ public class RequestsFragment extends Fragment {
                 setupInteractionButtons(holder, userId, false);
             }
 
+            // on cancel shows a toast message.
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Toast.makeText(getContext(), "Failed to fetch user info", Toast.LENGTH_SHORT).show();
@@ -162,6 +166,7 @@ public class RequestsFragment extends Fragment {
         });
     }
 
+    // handles friend requests, on accept and on reject enables two different listeners.
     private void setupInteractionButtons(RequestsViewHolder holder, String userId, boolean isReceived) {
         if (isReceived) {
             holder.AcceptButton.setVisibility(View.VISIBLE);
@@ -175,8 +180,10 @@ public class RequestsFragment extends Fragment {
         }
     }
 
+    // Handles accept requests
     private void acceptRequest(String userId) {
         UsersRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+            // on data change, fetches the required information and creates a new contact data.
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -194,15 +201,15 @@ public class RequestsFragment extends Fragment {
                             .setValue(contact)
                             .addOnCompleteListener(task -> {
                                 if (task.isSuccessful()) {
-                                    // Remove the request from the receiver's Chat Requests node
+                                    // Removes the request from the receiver's Chat Requests node
                                     ChatRequestsRef.child(currentUserID).child(userId).removeValue()
                                             .addOnCompleteListener(task1 -> {
                                                 if (task1.isSuccessful()) {
-                                                    // Remove the request from the sender's Chat Requests node
+                                                    // Removes the request from the sender's Chat Requests node
                                                     ChatRequestsRef.child(userId).child(currentUserID).removeValue()
                                                             .addOnCompleteListener(task2 -> {
                                                                 if (task2.isSuccessful()) {
-                                                                    // Add the current user to the contact's Contacts node
+                                                                    // Adding the current user to the contact's Contacts node
                                                                     UsersRef.child(currentUserID).addListenerForSingleValueEvent(new ValueEventListener() {
                                                                         @Override
                                                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -227,6 +234,7 @@ public class RequestsFragment extends Fragment {
                                                                             }
                                                                         }
 
+                                                                        // Handles database errors, and shows a toast message
                                                                         @Override
                                                                         public void onCancelled(@NonNull DatabaseError databaseError) {
                                                                             Toast.makeText(getContext(), "Failed to fetch user info", Toast.LENGTH_SHORT).show();
@@ -241,6 +249,7 @@ public class RequestsFragment extends Fragment {
                 }
             }
 
+            // Handles database errors, and shows a toast message
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Toast.makeText(getContext(), "Failed to fetch user info", Toast.LENGTH_SHORT).show();
@@ -248,6 +257,7 @@ public class RequestsFragment extends Fragment {
         });
     }
 
+    // handles the cancel requests, shows a cancellation toast message.
     private void cancelRequest(String userId) {
         ChatRequestsRef.child(currentUserID).child(userId).removeValue()
                 .addOnCompleteListener(task -> {
@@ -257,6 +267,7 @@ public class RequestsFragment extends Fragment {
                 });
     }
 
+    // cancels the sent requests sent to the user, and shows a toast message.
     private void cancelSentRequest(String userId) {
         ChatRequestsRef.child(currentUserID).child(userId).removeValue()
                 .addOnCompleteListener(task -> {
@@ -266,6 +277,7 @@ public class RequestsFragment extends Fragment {
                 });
     }
 
+    // setting up the view fields.
     public static class RequestsViewHolder extends RecyclerView.ViewHolder {
         TextView userName, userStatus;
         CircleImageView profileImage;

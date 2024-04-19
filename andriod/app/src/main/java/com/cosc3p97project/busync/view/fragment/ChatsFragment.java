@@ -34,7 +34,7 @@ public class ChatsFragment extends Fragment {
     private FirebaseAuth mAuth;
     private String currentUserID="";
 
-    // Add the onCreateView method to inflate the fragment layout.
+    // Adding the onCreateView method to inflate the fragment layout.
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         PrivateChatsView = inflater.inflate(R.layout.fragment_chats, container, false);
@@ -58,13 +58,13 @@ public class ChatsFragment extends Fragment {
         return PrivateChatsView;
     }
 
-    // Add the setupRecyclerView method to initialize the RecyclerView.
+    // Adding the setupRecyclerView method to initialize the RecyclerView.
     private void setupRecyclerView() {
         chatsList = PrivateChatsView.findViewById(R.id.chats_list);
         chatsList.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
-    // Add the onStart method to populate the RecyclerView with user data.
+    // Adding the onStart method to populate the RecyclerView with user data.
     @Override
     public void onStart() {
         super.onStart();
@@ -73,7 +73,7 @@ public class ChatsFragment extends Fragment {
         }
     }
 
-    // Add the setupAdapter method to populate the RecyclerView with user data.
+    // Adding the setupAdapter method to populate the RecyclerView with user data.
     private void setupAdapter() {
         FirebaseRecyclerOptions<Contacts> options = new FirebaseRecyclerOptions.Builder<Contacts>()
                 .setQuery(ChatsRef, Contacts.class)
@@ -118,7 +118,7 @@ public class ChatsFragment extends Fragment {
         adapter.startListening();
     }
 
-    // Create a ChatsViewHolder class to hold the user data.
+    // Creating a ChatsViewHolder class to hold the user data.
     public static class ChatsViewHolder extends RecyclerView.ViewHolder {
         CircleImageView profileImage;
         TextView userName, userStatus;

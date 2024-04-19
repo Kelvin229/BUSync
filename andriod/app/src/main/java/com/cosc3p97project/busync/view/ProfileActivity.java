@@ -48,18 +48,18 @@ public class ProfileActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        // Initialize Firebase
+        // Initializing Firebase
         mAuth = FirebaseAuth.getInstance();
         UserRef = FirebaseDatabase.getInstance().getReference().child("Users");
         ChatRequestRef = FirebaseDatabase.getInstance().getReference().child("Chat Requests");
         ContactsRef = FirebaseDatabase.getInstance().getReference().child("Contacts");
         NotificationRef = FirebaseDatabase.getInstance().getReference().child("Notifications");
 
-        // Get the user ID of the user whose profile is being viewed
+        // Getting the user ID of the user whose profile is being viewed
         receiverUserID = getIntent().getExtras().get("visit_user_id").toString();
         senderUserID = mAuth.getCurrentUser().getUid();
 
-        // Initialize the UI elements
+        // Initializing the UI elements
         userProfileImage = (CircleImageView) findViewById(R.id.visit_profile_image);
         userProfileName = (TextView) findViewById(R.id.visit_user_name);
         userProfileStatus = (TextView) findViewById(R.id.visit_profile_status);
@@ -68,10 +68,10 @@ public class ProfileActivity extends AppCompatActivity {
 
         Current_State = "new";
 
-        RetrieveUserInfo();
+        RetrieveUserInfo(); // retrieving user information
     }
 
-    // Add the onOptionsItemSelected method to handle the back button in the toolbar.
+    // Adding the onOptionsItemSelected method to handle the back button in the toolbar.
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -81,7 +81,7 @@ public class ProfileActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // Add the RetrieveUserInfo method to fetch the user's details from the database.
+    // Adding the RetrieveUserInfo method to fetch the user's details from the database.
     private void RetrieveUserInfo() {
         ValueEventListener userListener = new ValueEventListener() {
             // onDataChange is called when the data is first read and again whenever the data changes.
@@ -119,55 +119,56 @@ public class ProfileActivity extends AppCompatActivity {
         UserRef.child(receiverUserID).addValueEventListener(userListener);
     }
 
-    // Add the ManageChatRequests method to handle chat requests.
+    // Adding the ManageChatRequests method to handle chat requests.
     private void ManageChatRequests(){
         ChatRequestRef.child(senderUserID).addValueEventListener(new ValueEventListener(){
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot){
-              if(dataSnapshot.hasChild(receiverUserID)){
+                if(dataSnapshot.hasChild(receiverUserID)){
                   String request_type = dataSnapshot.child(receiverUserID).child("request_type").getValue().toString();
 
+                  // if requests is sent set cancel option
                   if(request_type.equals("sent")){
                       Current_State = "request_sent";
                       SendMessageRequestButton.setText("Cancel Chat Request");
-                  }
+                  } // if request is received set accept chat option
                   else if(request_type.equals("received")){
                       Current_State = "request_received";
                       SendMessageRequestButton.setText("Accept Chat Request");
 
-                      DeclineMessageRequestButton.setVisibility(View.VISIBLE);
+                      DeclineMessageRequestButton.setVisibility(View.VISIBLE); // sets visibility for decline message request button to true
                       DeclineMessageRequestButton.setEnabled(true);
 
                       DeclineMessageRequestButton.setOnClickListener(new View.OnClickListener() {
                           @Override
                           public void onClick(View view) {
-                              CancelChatRequest();
+                              CancelChatRequest(); // cancels chat requests
                           }
                       });
                   }
-              }
-              else{
-                  ContactsRef.child(senderUserID).addValueEventListener(new ValueEventListener(){
-                      @Override
-                      public void onDataChange(@NonNull DataSnapshot dataSnapshot){
-                          if(dataSnapshot.hasChild(receiverUserID)){
-                              Current_State = "friends";
-                              SendMessageRequestButton.setText("Remove This Contact");
-                          }
-                      }
-
-                      @Override
-                      public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                      }
-                  });
-              }
+                }
+                else{
+                    ContactsRef.child(senderUserID).addValueEventListener(new ValueEventListener(){
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot){
+                            if(dataSnapshot.hasChild(receiverUserID)){
+                                Current_State = "friends";
+                                SendMessageRequestButton.setText("Remove This Contact"); // set text fields to removing contact options
+                            }
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            // nothing changes
+                        }
+                    });
+                }
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                // no change
             }
         });
+
        if(!senderUserID.equals(receiverUserID)){
            SendMessageRequestButton.setOnClickListener(new View.OnClickListener(){
                @Override
@@ -185,14 +186,11 @@ public class ProfileActivity extends AppCompatActivity {
                    if(Current_State.equals("friends")){
                        RemoveSpecificContact();
                    }
-
                }
            });
        }
-
     }
-
-    // Add the RemoveSpecificContact method to remove a specific contact.
+    // Adding the RemoveSpecificContact method to remove a specific contact.
     private void RemoveSpecificContact(){
         ContactsRef.child(senderUserID)
                 .removeValue().addOnCompleteListener(new OnCompleteListener<Void>(){
@@ -218,7 +216,7 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
-    // Add the AcceptChatRequest method to accept a chat request.
+    // Adding the AcceptChatRequest method to accept a chat request.
     private void AcceptChatRequest() {
         DatabaseReference senderRef = ContactsRef.child(senderUserID).child(receiverUserID);
         DatabaseReference receiverRef = ContactsRef.child(receiverUserID).child(senderUserID);
@@ -253,7 +251,7 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
-    // Add the fetchAndSetSenderDetails method to fetch sender details and set them under receiver's contacts.
+    // Adding the fetchAndSetSenderDetails method to fetch sender details and set them under receiver's contacts.
     private void fetchAndSetSenderDetails(DatabaseReference receiverRef) {
         UserRef.child(senderUserID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -285,7 +283,7 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
-    // Add the removeChatRequests method to remove chat requests after they have been accepted.
+    // Adding the removeChatRequests method to remove chat requests after they have been accepted.
     private void removeChatRequests(String senderId, String receiverId) {
         ChatRequestRef.child(senderId).child(receiverId).removeValue().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -302,7 +300,7 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
-    // Add the SendChatRequest method to send a chat request.
+    // Adding the SendChatRequest method to send a chat request.
     private void SendChatRequest(){
         ChatRequestRef.child(senderUserID).child(receiverUserID)
                 .child("request_type").setValue("sent")
@@ -340,7 +338,7 @@ public class ProfileActivity extends AppCompatActivity {
                 });
     }
 
-    // Add the CancelChatRequest method to cancel a chat request.
+    // Adding the CancelChatRequest method to cancel a chat request.
     private void CancelChatRequest(){
 
         ChatRequestRef.child(senderUserID).child(receiverUserID)

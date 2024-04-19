@@ -56,15 +56,16 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        mAuth = FirebaseAuth.getInstance();
-        currentUserID = mAuth.getCurrentUser().getUid();
-        RootRef = FirebaseDatabase.getInstance().getReference();
-        UserProfileImagesRef = FirebaseStorage.getInstance().getReference().child("Profile Images");
+        mAuth = FirebaseAuth.getInstance(); // firebase authentication instance.
+        currentUserID = mAuth.getCurrentUser().getUid(); // getting current uses id.
+        RootRef = FirebaseDatabase.getInstance().getReference(); // database reference
+        UserProfileImagesRef = FirebaseStorage.getInstance().getReference().child("Profile Images"); // ref to firebase storage.
 
-        InitializeFields();
+        InitializeFields(); // initializes UI components.
 
-        RetrieveUserInfo();
+        RetrieveUserInfo(); // retrieves user information
 
+        // updates account settings.
         UpdateAccountSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,6 +73,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
+        // on clicking user profile image, send user to gallery intent.
         userProfileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -92,6 +94,7 @@ public class SettingsActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    // Updates setting and db.
     private void UpdateSettings() {
         String setUserName = userName.getText().toString();
         String setStatus = userStatus.getText().toString();
@@ -129,6 +132,7 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
+    // retrieves user information from the db.
     private void RetrieveUserInfo() {
         RootRef.child("Users").child(currentUserID)
                 .addValueEventListener(new ValueEventListener() {
@@ -155,6 +159,7 @@ public class SettingsActivity extends AppCompatActivity {
                 });
     }
 
+    // sends user to main activity.
     private void SendUserToMainActivity(){
         Intent mainIntent = new Intent(SettingsActivity.this, MainActivity.class);
         mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -162,6 +167,7 @@ public class SettingsActivity extends AppCompatActivity {
         finish();
     }
 
+    // UI component initialization function.
     private void InitializeFields(){
         UpdateAccountSettings = (Button) findViewById(R.id.update_settings_button);
         userName = (EditText) findViewById(R.id.set_user_name);
@@ -177,6 +183,7 @@ public class SettingsActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Account Settings");
     }
 
+    // Reloads the current screen with updated username, status, and images.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

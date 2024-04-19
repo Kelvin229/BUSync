@@ -36,11 +36,15 @@ import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
+
+    /**
+     * This class helps with displaying and interactions within the chat box.
+     */
     private final List<Messages> userMessagesList;
     private FirebaseAuth mAuth;
     private DatabaseReference usersRef;
 
-    // Add the MessageAdapter constructor to initialize the fields.
+    // Adding the MessageAdapter constructor to initialize the fields.
     public MessageAdapter(List<Messages> userMessagesList) {
         this.userMessagesList = userMessagesList;
 
@@ -48,7 +52,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         usersRef = FirebaseDatabase.getInstance().getReference().child("Users");
     }
 
-    // Add the MessageViewHolder class to define the view holder for the RecyclerView.
+    // Adding the MessageViewHolder class to define the view holder for the RecyclerView.
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
         public TextView senderMessageText, receiverMessageText;
         public CircleImageView receiverProfileImage;
@@ -66,7 +70,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         }
     }
 
-    // Add the onCreateViewHolder method to inflate the layout for the view holder.
+    // Adding the onCreateViewHolder method to inflate the layout for the view holder.
     @NonNull
     @Override
     public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -79,6 +83,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     }
 
 
+    /**
+     * This method populates each item in the recycler view with data. Click listeners are defined based on message type.
+     * @param messageViewHolder The ViewHolder which should be updated to represent the contents of the
+     *        item at the given position in the data set.
+     * @param position The position of the item within the adapter's data set.
+     */
     @Override
     public void onBindViewHolder(@NonNull final MessageViewHolder messageViewHolder, int position) {
         String messageSenderId = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
@@ -132,7 +142,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         });
     }
 
-    // Add the setupTextMessage method to display text messages.
+    // Adding the setupTextMessage method to display text messages.
     private void setupTextMessage(String fromUserID, String senderID, Messages messages, MessageViewHolder holder) {
         if (fromUserID.equals(senderID)) {
             holder.senderMessageText.setVisibility(View.VISIBLE);
@@ -148,21 +158,21 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         }
     }
 
-    // Add the setupImageMessage method to display image messages.
+    // Adding the setupImageMessage method to display image messages.
     private void setupImageMessage(String fromUserID, String senderID, Messages messages, MessageViewHolder holder) {
         ImageView targetView = fromUserID.equals(senderID) ? holder.messageSenderPicture : holder.messageReceiverPicture;
         targetView.setVisibility(View.VISIBLE);
         Picasso.get().load(messages.getMessage()).into(targetView);
     }
 
-    // Add the setupDocumentMessage method to display document messages.
+    // Adding the setupDocumentMessage method to display document messages.
     private void setupDocumentMessage(String fromUserID, String senderID, Messages messages, MessageViewHolder holder) {
         ImageView targetView = fromUserID.equals(senderID) ? holder.messageSenderPicture : holder.messageReceiverPicture;
         targetView.setVisibility(View.VISIBLE);
         targetView.setBackgroundResource(R.drawable.file);
     }
 
-    // Add the handleItemClick method to handle item clicks.
+    // Adding the handleItemClick method to handle item clicks.
     private void handleItemClick(Messages message, MessageViewHolder holder) {
         switch (message.getType()) {
             case "pdf", "docx" -> {
@@ -175,6 +185,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         }
     }
 
+    // Adding show image options such as delete the image, or cancel dialog box.
     private void showImageOptions(Messages message, MessageViewHolder holder) {
         CharSequence[] options = new CharSequence[]{"View This Image", "Delete Options", "Cancel"};
         AlertDialog.Builder builder = new AlertDialog.Builder(holder.itemView.getContext());
@@ -195,6 +206,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         builder.show();
     }
 
+    // Shows text options, copy texts or delete texts from chat.
     private void showTextOptions(Messages message, MessageViewHolder holder) {
         CharSequence[] options = new CharSequence[]{"Copy Text", "Delete Options", "Cancel"};
         AlertDialog.Builder builder = new AlertDialog.Builder(holder.itemView.getContext());
@@ -216,6 +228,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         builder.show();
     }
 
+    // Shows general options
     private void showGeneralOptions(Messages message, MessageViewHolder holder) {
         CharSequence[] options = new CharSequence[]{"Delete Options", "Cancel"};
         AlertDialog.Builder builder = new AlertDialog.Builder(holder.itemView.getContext());
@@ -230,6 +243,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         builder.show();
     }
 
+    // Shows delete options, such as Delete for me, delete for others, and delete for everyone.
     private void showDeleteOptions(Messages message, MessageViewHolder holder) {
         CharSequence[] deleteOptions = new CharSequence[]{"Delete for Me", "Delete for Other", "Delete for Everyone", "Cancel"};
         AlertDialog.Builder deleteBuilder = new AlertDialog.Builder(holder.itemView.getContext());
@@ -246,12 +260,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         deleteBuilder.show();
     }
 
+    // gets item counts
     @Override
     public int getItemCount() {
         return userMessagesList.size();
     }
 
-    // Delete message sent by the sender only
+    // Delete messages sent by the sender only
     private void deleteSentMessage(final int position , MessageViewHolder holder) {
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         Messages message = userMessagesList.get(position);
@@ -273,7 +288,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 });
     }
 
-    // Delete message received by the receiver only
+    // Delete messages received by the receiver only
     private void deleteReceiverMessage(final int position , MessageViewHolder holder) {
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         Messages message = userMessagesList.get(position);
@@ -295,7 +310,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 });
     }
 
-    // Delete message for everyone involved
+    // Delete messages for everyone involved
     private void deleteMessageForEveryOne(final int position , MessageViewHolder holder) {
         final DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         Messages message = userMessagesList.get(position);
