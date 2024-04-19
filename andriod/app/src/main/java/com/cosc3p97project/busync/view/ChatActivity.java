@@ -9,6 +9,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,6 +17,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -91,12 +93,12 @@ public class ChatActivity extends AppCompatActivity
 
         ChatToolBar = findViewById(R.id.chat_toolbar);
         setSupportActionBar(ChatToolBar);
-        getSupportActionBar().setTitle("Chat Activity");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Chat Activity");
 
-        // Enable the back button
+        // Enables the back button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // Initialize the Firebase authentication and database references.
+        // Initializes the Firebase authentication and database references.
         mAuth = FirebaseAuth.getInstance();
         messageSenderID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
         RootRef = FirebaseDatabase.getInstance().getReference();
@@ -128,6 +130,7 @@ public class ChatActivity extends AppCompatActivity
                 SendMessage();
             }
         });
+
         DisplayLastSeen();
         SendFilesButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -185,38 +188,39 @@ public class ChatActivity extends AppCompatActivity
     }
 
     // Add the IntializeControllers method to initialize the activity components.
+    @SuppressLint("RestrictedApi")
     private void IntializeControllers() {
-        ChatToolBar = (Toolbar) findViewById(R.id.chat_toolbar);
+        ChatToolBar = findViewById(R.id.chat_toolbar);
         setSupportActionBar(ChatToolBar);
 
         ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
         actionBar.setDefaultDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowCustomEnabled(true);
 
         LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View actionBarView = layoutInflater.inflate(R.layout.custom_chat_bar,null);
+        @SuppressLint("InflateParams") View actionBarView = layoutInflater.inflate(R.layout.custom_chat_bar,null);
         actionBar.setCustomView(actionBarView);
 
         loadingBar = new ProgressDialog(this);
 
-        userImage = (CircleImageView) findViewById(R.id.custom_profile_image);
-            userName = (TextView) findViewById(R.id.custom_profile_name);
+        userImage = findViewById(R.id.custom_profile_image);
+        userName = findViewById(R.id.custom_profile_name);
+        userLastSeen = findViewById(R.id.custom_user_last_seen);
 
-        userLastSeen = (TextView) findViewById(R.id.custom_user_last_seen);
-
-        SendMessageButton = (ImageButton) findViewById(R.id.send_message_btn);
-
+        SendMessageButton = findViewById(R.id.send_message_btn);
         SendMessageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 SendMessage();
             }
         });
-        SendFilesButton = (ImageButton) findViewById(R.id.send_files_btn);
-        MessageInputText = (EditText) findViewById(R.id.input_message);
+
+        SendFilesButton = findViewById(R.id.send_files_btn);
+        MessageInputText = findViewById(R.id.input_message);
 
         messageAdapter = new MessageAdapter(messagesList);
-        userMessagesList = (RecyclerView) findViewById(R.id.private_messages_list_of_users);
+        userMessagesList = findViewById(R.id.private_messages_list_of_users);
         linearLayoutManager = new LinearLayoutManager(this);
         userMessagesList.setLayoutManager(linearLayoutManager);
         userMessagesList.setAdapter(messageAdapter);
@@ -228,7 +232,6 @@ public class ChatActivity extends AppCompatActivity
 
         SimpleDateFormat currentTime = new SimpleDateFormat("hh:mm a");
         saveCurrentTime = currentTime.format(calendar.getTime());
-
     }
 
     // Add the onActivityResult method to handle file uploads.

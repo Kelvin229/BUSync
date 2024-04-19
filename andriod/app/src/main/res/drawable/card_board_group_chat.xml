@@ -1,0 +1,33 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- Background color -->
+    <solid android:color="@color/colorPrimaryTransparent" />
+
+    <!-- Outer border -->
+    <stroke
+        android:width="2dp"
+        android:color="@color/colorPrimary" />
+
+    <!-- Inner border -->
+    <stroke
+        android:width="1dp"
+        android:color="@color/colorPrimaryDark" />
+
+    <!-- Top-left corner -->
+    <corners
+        android:topLeftRadius="10dp" />
+
+    <!-- Top-right corner -->
+    <corners
+        android:topRightRadius="10dp" />
+
+    <!-- Bottom-left corner -->
+    <corners
+        android:bottomLeftRadius="5dp" />
+
+    <!-- Bottom-right corner -->
+    <corners
+        android:bottomRightRadius="5dp" />
+
+</shape>
